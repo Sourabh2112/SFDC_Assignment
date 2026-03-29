@@ -1,0 +1,30 @@
+<template>
+    <div class="slds-p-around_medium">
+
+        <lightning-input label="Contact Number" value={record.Contact_Number__c} data-field="Contact_Number__c"
+            onchange={handleChange}>
+        </lightning-input>
+
+        <lightning-input label="Email" value={record.Email__c} data-field="Email__c" onchange={handleChange}>
+        </lightning-input>
+
+        <lightning-input label="Address Line 1" value={record.Address_Line1__c} data-field="Address_Line1__c"
+            onchange={handleChange}>
+        </lightning-input>
+
+        <lightning-input label="City" value={record.City__c} data-field="City__c" onchange={handleChange}>
+        </lightning-input>
+
+        <lightning-input label="State" value={record.State__c} data-field="State__c" onchange={handleChange}>
+        </lightning-input>
+
+        <lightning-input label="Pin" value={record.Pin__c} data-field="Pin__c" onchange={handleChange}>
+        </lightning-input>
+
+        <div class="slds-m-top_medium">
+            <lightning-button label="Update" variant="brand" onclick={handleUpdate}></lightning-button>
+            <lightning-button label="Reset" onclick={handleReset}></lightning-button>
+        </div>
+
+    </div>
+</template>

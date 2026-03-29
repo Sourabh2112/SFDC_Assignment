@@ -1,0 +1,19 @@
+<template>
+    <lightning-card title="Contact Details">
+
+        <lightning-layout multiple-rows>
+
+            <!-- LEFT: FORM -->
+            <lightning-layout-item size="12" medium-device-size="6">
+                <c-form-contact record-id={recordId}></c-form-contact>
+            </lightning-layout-item>
+
+            <!-- RIGHT: CSV -->
+            <lightning-layout-item size="12" medium-device-size="6">
+                <c-csv-uploader mode="update"></c-csv-uploader>
+            </lightning-layout-item>
+
+        </lightning-layout>
+
+    </lightning-card>
+</template>

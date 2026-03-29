@@ -1,0 +1,19 @@
+<template>
+    <lightning-card title="Personal Details">
+
+        <lightning-layout multiple-rows>
+
+            <!-- LEFT: FORM -->
+            <lightning-layout-item size="12" medium-device-size="6">
+                <c-form-personal onrefresh={handleRefresh}></c-form-personal>
+            </lightning-layout-item>
+
+            <!-- RIGHT: CSV -->
+            <lightning-layout-item size="12" medium-device-size="6">
+                <c-csv-uploader mode="insert" onrefresh={handleRefresh}></c-csv-uploader>
+            </lightning-layout-item>
+
+        </lightning-layout>
+
+    </lightning-card>
+</template>
