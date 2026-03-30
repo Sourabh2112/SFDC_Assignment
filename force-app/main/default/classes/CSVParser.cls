@@ -1,6 +1,6 @@
 public with sharing class CSVParser {
 
-    public static List<Aadhar_Entry__c> parse(String csvData, Boolean isUpdate) {
+    public static List<Aadhar_Entry__c> parse(String csvData, String mode) {
 
         List<Aadhar_Entry__c> records = new List<Aadhar_Entry__c>();
 
@@ -19,32 +19,49 @@ public with sharing class CSVParser {
 
             try {
 
-                if(isUpdate) {
+                // PERSONAL INSERT
+                if(mode == 'PERSONAL') {
+
+                    rec.First_Name__c = cols[index++].trim();
+                    rec.Middle_Name__c = cols[index++].trim();
+                    rec.Last_Name__c = cols[index++].trim();
+
+                    String dobStr = cols[index++].trim();
+                    if(!String.isBlank(dobStr)) {
+                        rec.DOB__c = Date.valueOf(dobStr);
+                    }
+
+                    rec.Gender__c = cols[index++].trim();
+                }
+
+                // CONTACT INSERT (if needed)
+                else if(mode == 'CONTACT_INSERT') {
+
+                    rec.Contact_Number__c = cols[index++].trim();
+                    rec.Email__c = cols[index++].trim();
+                    rec.Address_Line1__c = cols[index++].trim();
+                    rec.City__c = cols[index++].trim();
+                    rec.State__c = cols[index++].trim();
+                    rec.Pin__c = cols[index++].trim();
+                }
+
+                // CONTACT UPDATE (ID BASED)
+                else if(mode == 'CONTACT_UPDATE') {
+
                     rec.Id = cols[index++].trim();
+
+                    rec.Contact_Number__c = cols[index++].trim();
+                    rec.Email__c = cols[index++].trim();
+                    rec.Address_Line1__c = cols[index++].trim();
+                    rec.City__c = cols[index++].trim();
+                    rec.State__c = cols[index++].trim();
+                    rec.Pin__c = cols[index++].trim();
                 }
 
-                rec.First_Name__c = cols[index++].trim();
-                rec.Last_Name__c = cols[index++].trim();
-
-                // DATE SAFE
-                String dobStr = cols[index++].trim();
-                if(!String.isBlank(dobStr)) {
-                    rec.DOB__c = Date.valueOf(dobStr);
-                }
-
-                //rec.Contact_Number__c = cols[index++].trim();
-                rec.Contact_Number__c = cols[index++].trim();
-                
-                rec.Email__c = cols[index++].trim();
-                rec.City__c = cols[index++].trim();
-                rec.State__c = cols[index++].trim();
-                
-                rec.Pin__c = cols[index++].trim();
-    
                 records.add(rec);
+                System.debug('Parsed Records: ' + records);
 
             } catch (Exception e) {
-                // Skip bad row (don’t crash whole upload)
                 System.debug('CSV Parse Error at row ' + i + ': ' + e.getMessage());
             }
         }

@@ -33,14 +33,14 @@ public with sharing class AadharController {
     // CSV INSERT
     @AuraEnabled
     public static List<String> processInsertCSV(String csvData) {
-        List<Aadhar_Entry__c> records = CSVParser.parse(csvData, false);
+        List<Aadhar_Entry__c> records = CSVParser.parse(csvData, 'PERSONAL');
         return AadharService.processInsert(records);
     }
 
     // CSV UPDATE (ID BASED)
     @AuraEnabled
     public static List<String> processUpdateCSV(String csvData) {
-        List<Aadhar_Entry__c> records = CSVParser.parse(csvData, true);
+        List<Aadhar_Entry__c> records = CSVParser.parse(csvData, 'CONTACT_UPDATE');
         return AadharService.processUpdate(records);
     }
 }

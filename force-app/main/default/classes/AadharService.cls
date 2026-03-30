@@ -103,6 +103,7 @@ public with sharing class AadharService {
 
         Set<Id> ids = new Set<Id>();
 
+        // Collect Ids
         for(Aadhar_Entry__c rec : records) {
             if(rec.Id == null) {
                 errors.add('Missing Id for update');
@@ -111,10 +112,15 @@ public with sharing class AadharService {
             }
         }
 
+        // Fetch existing records (WITH PERSONAL DATA)
         Map<Id, Aadhar_Entry__c> existingMap = new Map<Id, Aadhar_Entry__c>(
-            [SELECT Id FROM Aadhar_Entry__c WHERE Id IN :ids]
+            [SELECT Id, First_Name__c, Middle_Name__c, Last_Name__c, DOB__c, Gender__c,
+                    Contact_Number__c, Email__c, Address_Line1__c, City__c, State__c, Pin__c
+            FROM Aadhar_Entry__c
+            WHERE Id IN :ids]
         );
 
+        // Process each record
         for(Aadhar_Entry__c rec : records) {
 
             if(rec.Id == null || !existingMap.containsKey(rec.Id)) {
@@ -122,16 +128,41 @@ public with sharing class AadharService {
                 continue;
             }
 
-            List<String> recErrors = AadharValidator.validate(rec);
+            // Merge existing + incoming data
+            Aadhar_Entry__c existing = existingMap.get(rec.Id);
 
-            if(!recErrors.isEmpty()) {
-                errors.add('Update Error: ' + String.join(recErrors, ', '));
+            existing.Contact_Number__c = rec.Contact_Number__c;
+            existing.Email__c = rec.Email__c;
+            existing.Address_Line1__c = rec.Address_Line1__c;
+            existing.City__c = rec.City__c;
+            existing.State__c = rec.State__c;
+            existing.Pin__c = rec.Pin__c;
+
+            // inside loop
+            List<Aadhar_Entry__c> dup = [
+                SELECT Id FROM Aadhar_Entry__c
+                WHERE Id != :rec.Id
+                AND (Email__c = :rec.Email__c OR Contact_Number__c = :rec.Contact_Number__c)
+                LIMIT 1
+            ];
+
+            if(!dup.isEmpty()) {
+                errors.add('Duplicate found for Id: ' + rec.Id);
                 continue;
             }
 
-            validList.add(rec);
+            // Validate FULL record
+            List<String> recErrors = AadharValidator.validate(existing);
+
+            if(!recErrors.isEmpty()) {
+                errors.add('Update Error (Id: ' + rec.Id + '): ' + String.join(recErrors, ', '));
+                continue;
+            }
+
+            validList.add(existing);
         }
 
+        // Bulk update
         if(!validList.isEmpty()) {
             update validList;
         }
