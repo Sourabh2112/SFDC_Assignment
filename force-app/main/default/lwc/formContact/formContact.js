@@ -29,7 +29,7 @@ export default class FormContact extends LightningElement {
             if (this.record.State__c && this.stateOptions.length) {
                 this.setCities(this.record.State__c);
             }
-        }else if (error) {
+        } else if (error) {
             console.error(error);
         }
     }
@@ -94,16 +94,16 @@ export default class FormContact extends LightningElement {
             recordId: this.recordId,
             rec: this.record
         })
-        .then(() => {
+            .then(() => {
 
-            this.showToast('Success', 'Updated', 'success');
-            // CLOSE MODAL
-            this.dispatchEvent(new CloseActionScreenEvent());
+                this.showToast('Success', 'Updated', 'success');
+                // CLOSE MODAL
+                this.dispatchEvent(new CloseActionScreenEvent());
 
-        })
-        .catch(err => {
-            this.showToast('Error', err.body.message, 'error');
-        });
+            })
+            .catch(err => {
+                this.showToast('Error', err.body.message, 'error');
+            });
     }
 
     handleReset() {
