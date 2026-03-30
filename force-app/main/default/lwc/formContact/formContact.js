@@ -1,42 +1,109 @@
 import { LightningElement, api, track, wire } from 'lwc';
 import getRecord from '@salesforce/apex/AadharController.getRecord';
 import updateContact from '@salesforce/apex/AadharController.updateContact';
+
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { CloseActionScreenEvent } from 'lightning/actions';
 
+// PICKLIST IMPORTS
+import { getObjectInfo, getPicklistValuesByRecordType } from 'lightning/uiObjectInfoApi';
+import AADHAR_OBJECT from '@salesforce/schema/Aadhar_Entry__c';
 export default class FormContact extends LightningElement {
 
     @api recordId;
-    @track record = {};
 
-    // FETCH EXISTING DATA
+    @track record = {};
+    @track stateOptions = [];
+    @track cityOptions = [];
+
+    allCityValues;
+    selectedStateIndex;
+
+    // FETCH EXISTING RECORD
     @wire(getRecord, { recordId: '$recordId' })
-        wiredRecord({ data, error }) {
-            if (data) {
-                this.record = { ...data };
-            } else if (error) {
-                console.error(error);
+    wiredRecord({ data, error }) {
+        if (data) {
+            this.record = { ...data };
+
+            //  If state already exists → populate cities
+            if (this.record.State__c && this.stateOptions.length) {
+                this.setCities(this.record.State__c);
             }
+        }else if (error) {
+            console.error(error);
+        }
     }
 
+    // GET OBJECT INFO
+    @wire(getObjectInfo, { objectApiName: AADHAR_OBJECT })
+    objectInfo;
+
+    // GET PICKLIST VALUES
+    @wire(getPicklistValuesByRecordType, {
+        objectApiName: AADHAR_OBJECT,
+        recordTypeId: '$objectInfo.data.defaultRecordTypeId'
+    })
+    wiredPicklists({ data, error }) {
+        if (data) {
+            this.stateOptions = data.picklistFieldValues.State__c.values;
+            this.allCityValues = data.picklistFieldValues.City__c;
+
+            // Handle prefill after picklist loads
+            if (this.record.State__c) {
+                this.setCities(this.record.State__c);
+            }
+        }
+    }
+
+    // HANDLE STATE CHANGE
+    handleStateChange(event) {
+        const selectedState = event.detail.value;
+
+        this.record.State__c = selectedState;
+        this.record.City__c = null; // reset city
+
+        this.setCities(selectedState);
+    }
+
+    // FILTER CITY BASED ON STATE
+    setCities(stateValue) {
+
+        this.selectedStateIndex = this.stateOptions.findIndex(
+            state => state.value === stateValue
+        );
+
+        this.cityOptions = this.allCityValues.values.filter(city =>
+            city.validFor.includes(this.selectedStateIndex)
+        );
+    }
+
+    // HANDLE CITY CHANGE
+    handleCityChange(event) {
+        this.record.City__c = event.detail.value;
+    }
+
+    // HANDLE OTHER INPUTS
     handleChange(event) {
         this.record[event.target.dataset.field] = event.target.value;
-        //console.log('Record Id:', this.recordId);
     }
 
+    // UPDATE RECORD
     handleUpdate() {
 
         updateContact({
             recordId: this.recordId,
             rec: this.record
         })
-            .then(() => {
-                this.showToast('Success', 'Updated', 'success');
-                this.dispatchEvent(new CloseActionScreenEvent());
-            })
-            .catch(err => {
-                this.showToast('Error', err.body.message, 'error');
-            });
+        .then(() => {
+
+            this.showToast('Success', 'Updated', 'success');
+            // CLOSE MODAL
+            this.dispatchEvent(new CloseActionScreenEvent());
+
+        })
+        .catch(err => {
+            this.showToast('Error', err.body.message, 'error');
+        });
     }
 
     handleReset() {

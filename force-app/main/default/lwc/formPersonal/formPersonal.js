@@ -24,22 +24,32 @@ export default class FormPersonal extends NavigationMixin(LightningElement) {
         }
 
         createPersonal({ rec: this.record })
-            .then(() => {
+            .then((recordId) => {   // CAPTURE ID
+
                 this.showToast('Success', 'Saved', 'success');
-                //this.handleReset();
-                this.dispatchEvent(new CustomEvent('refresh'));
-                // REDIRECT TO RECORD PAGE
+
+                // REDIRECT
                 this[NavigationMixin.Navigate]({
                     type: 'standard__recordPage',
                     attributes: {
-                        recordId: recordId,
+                        recordId: recordId,   // NOW VALID
                         objectApiName: 'Aadhar_Entry__c',
                         actionName: 'view'
                     }
                 });
+
             })
             .catch(err => {
-                this.showToast('Error', err.body.message, 'error');
+
+                let message = 'Unknown error';
+
+                if (err?.body?.message) {
+                    message = err.body.message;
+                } else if (err?.message) {
+                    message = err.message;
+                }
+
+                this.showToast('Error', message, 'error');
             });
     }
 

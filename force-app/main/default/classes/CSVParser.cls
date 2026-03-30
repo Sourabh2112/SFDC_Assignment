@@ -33,21 +33,14 @@ public with sharing class CSVParser {
                 }
 
                 //rec.Contact_Number__c = cols[index++].trim();
-                // CONTACT SAFE PARSE
-                String contactStr = cols[index++].trim();
-                if(!String.isBlank(contactStr)) {
-                    rec.Contact_Number__c = Decimal.valueOf(contactStr);
-                }
+                rec.Contact_Number__c = cols[index++].trim();
+                
                 rec.Email__c = cols[index++].trim();
                 rec.City__c = cols[index++].trim();
                 rec.State__c = cols[index++].trim();
-
-                // SAFE DECIMAL PARSE (IMPORTANT)
-                String pinStr = cols[index++].trim();
-                if(!String.isBlank(pinStr)) {
-                    rec.Pin__c = Decimal.valueOf(pinStr);
-                }
-
+                
+                rec.Pin__c = cols[index++].trim();
+    
                 records.add(rec);
 
             } catch (Exception e) {
