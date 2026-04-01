@@ -1,0 +1,63 @@
+<template>
+
+    <lightning-card title="Aadhar Records">
+
+        <!-- 🔴 FILTER -->
+        <div class="slds-grid slds-gutters slds-p-around_medium">
+
+            <lightning-combobox
+                label="State"
+                value={selectedState}
+                options={stateOptions}
+                onchange={handleStateChange}>
+            </lightning-combobox>
+
+            <lightning-combobox
+                label="City"
+                value={selectedCity}
+                options={cityOptions}
+                onchange={handleCityChange}>
+            </lightning-combobox>
+
+            <lightning-button label="Search" onclick={loadData}></lightning-button>
+
+            <!-- EXPORT -->
+            <lightning-button 
+                label="Export XLS" 
+                variant="brand" 
+                class="slds-m-left_auto"
+                onclick={handleExport}>
+            </lightning-button>
+
+        </div>
+
+        <!-- 🔴 TABLE -->
+        <lightning-datatable
+            key-field="Id"
+            data={data}
+            columns={columns}
+            onrowselection={handleRowSelection}>
+        </lightning-datatable>
+
+        <!-- 🔴 PAGINATION -->
+        <div class="slds-p-around_medium slds-align_absolute-center">
+            <lightning-button label="Previous" onclick={handlePrev}></lightning-button>
+            <lightning-button label="Next" onclick={handleNext}></lightning-button>
+        </div>
+
+        <!-- 🔴 ACTION BUTTONS -->
+        <div class="slds-p-around_medium slds-align_absolute-center">
+
+            <lightning-button label="Edit" onclick={handleEdit}></lightning-button>
+
+            <lightning-button 
+                label="Delete" 
+                variant="destructive"
+                onclick={handleDelete}>
+            </lightning-button>
+
+        </div>
+
+    </lightning-card>
+
+</template>
