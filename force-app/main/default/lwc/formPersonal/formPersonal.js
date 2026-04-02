@@ -16,6 +16,42 @@ export default class FormPersonal extends NavigationMixin(LightningElement) {
         this.record[event.target.dataset.field] = event.target.value;
     }
 
+    validateField(event) {
+
+        const field = event.target;
+        const fieldName = field.dataset.field;
+        const value = field.value;
+
+        let errorMessage = '';
+
+        // NAME VALIDATION
+        if (['First_Name__c', 'Middle_Name__c', 'Last_Name__c'].includes(fieldName)) {
+            const regex = /^[A-Za-z]+$/;
+
+            if (value && !regex.test(value)) {
+                errorMessage = 'Only alphabets allowed';
+            }
+        }
+
+        if (fieldName === 'DOB__c') {
+
+            if (value) {
+                const selectedDate = new Date(value);
+                const today = new Date();
+
+                // remove time part
+                today.setHours(0, 0, 0, 0);
+
+                if (selectedDate > today) {
+                    errorMessage = 'Future date not allowed';
+                }
+            }
+        }
+
+        field.setCustomValidity(errorMessage);
+        field.reportValidity();
+    }
+
     handleSave() {
 
         if (!this.record.First_Name__c || !this.record.Last_Name__c) {

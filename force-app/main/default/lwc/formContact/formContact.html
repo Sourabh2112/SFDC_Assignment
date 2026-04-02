@@ -2,14 +2,14 @@
     <div class="slds-p-around_medium">
 
         <lightning-input label="Contact Number" value={record.Contact_Number__c} data-field="Contact_Number__c"
-            onchange={handleChange}>
+            onchange={handleChange} onkeyup={validateField}>
         </lightning-input>
 
-        <lightning-input label="Email" value={record.Email__c} data-field="Email__c" onchange={handleChange}>
+        <lightning-input label="Email" value={record.Email__c} data-field="Email__c" onchange={handleChange} onkeyup={validateField}>
         </lightning-input>
 
         <lightning-input label="Address Line 1" value={record.Address_Line1__c} data-field="Address_Line1__c"
-            onchange={handleChange}>
+            onchange={handleChange} >
         </lightning-input>
 
         <!-- STATE -->
@@ -20,7 +20,7 @@
         <lightning-combobox label="City" value={record.City__c} options={cityOptions} onchange={handleCityChange}>
         </lightning-combobox>
 
-        <lightning-input label="Pin" value={record.Pin__c} data-field="Pin__c" onchange={handleChange}>
+        <lightning-input label="Pin" value={record.Pin__c} data-field="Pin__c" onchange={handleChange} onkeyup={validateField}>
         </lightning-input>
 
         <div class="slds-m-top_medium">

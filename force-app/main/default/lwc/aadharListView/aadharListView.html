@@ -5,38 +5,23 @@
         <!-- FILTER -->
         <div class="slds-grid slds-gutters slds-p-around_medium">
 
-            <lightning-combobox
-                label="State"
-                value={sState}
-                options={stateOptions}
-                onchange={handleStateChange}>
+            <lightning-combobox label="State" value={sState} options={stateOptions} onchange={handleStateChange}>
             </lightning-combobox>
 
-            <lightning-combobox
-                label="City"
-                value={sCity}
-                options={cityOptions}
-                onchange={handleCityChange}>
+            <lightning-combobox label="City" value={sCity} options={cityOptions} onchange={handleCityChange}>
             </lightning-combobox>
 
             <lightning-button label="Reset" onclick={resetFilter}></lightning-button>
 
             <!-- EXPORT -->
-            <lightning-button 
-                label="Export XLS" 
-                variant="brand" 
-                class="slds-m-left_auto"
-                onclick={handleExport}>
+            <lightning-button label="Export XLS" variant="brand" class="slds-m-left_auto" onclick={handleExport}>
             </lightning-button>
 
         </div>
 
         <!-- TABLE -->
-        <lightning-datatable
-            key-field="Id"
-            data={data}
-            columns={columns}
-            onrowselection={handleRowSelection}>
+        <lightning-datatable key-field="Id" data={data} columns={columns} onrowselection={handleRowSelection}
+            onrowaction={handleRowAction}>
         </lightning-datatable>
 
         <!-- PAGINATION -->
@@ -50,13 +35,48 @@
 
             <lightning-button label="Edit" onclick={handleEdit}></lightning-button>
 
-            <lightning-button 
-                label="Delete" 
-                variant="destructive"
-                onclick={handleDelete}>
+            <lightning-button label="Delete" variant="destructive" onclick={handleDelete}>
             </lightning-button>
 
         </div>
+
+        <template if:true={showModal}>
+            <section role="dialog" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+
+                    <!-- HEADER -->
+                    <header class="slds-modal__header">
+                        <h2 class="slds-text-heading_medium">
+                            {modalMode}
+                        </h2>
+                    </header>
+
+                    <!-- BODY -->
+                    <div class="slds-modal__content slds-p-around_medium">
+
+                        <!-- VIEW COMPONENT -->
+                        <template if:true={isViewMode}>
+                            <c-aadhar-view record-id={selectedRecordId} onclose={handleCloseModal}></c-aadhar-view>
+                        </template>
+
+                        <!-- EDIT COMPONENT -->
+                        <template if:true={isEditMode}>
+                            <c-contact-page record-id={selectedRecordId} onclose={handleCloseModal}>
+                            </c-contact-page>
+                        </template>
+
+                    </div>
+
+                    <!-- FOOTER -->
+                    <footer class="slds-modal__footer">
+                        <lightning-button label="Close" onclick={handleCloseModal}></lightning-button>
+                    </footer>
+
+                </div>
+            </section>
+
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
 
     </lightning-card>
 

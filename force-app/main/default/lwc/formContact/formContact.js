@@ -11,6 +11,7 @@ import AADHAR_OBJECT from '@salesforce/schema/Aadhar_Entry__c';
 export default class FormContact extends LightningElement {
 
     @api recordId;
+    @api mode; // 'view' or 'edit'
 
     @track record = {};
     @track stateOptions = [];
@@ -82,6 +83,46 @@ export default class FormContact extends LightningElement {
         this.record.City__c = event.detail.value;
     }
 
+    validateField(event) {
+
+        const field = event.target;
+        const fieldName = field.dataset.field; 
+        const value = field.value;
+
+        let errorMessage = '';
+
+        // PHONE VALIDATION
+        if (['Contact_Number__c'].includes(fieldName)) {
+            const regex = /^[0-9]{10}$/;
+
+            if (value && !regex.test(value)) {
+                errorMessage = 'Enter valid 10-digit number';
+            }
+        }
+
+        // EMAIL VALIDATION
+        if (['Email__c'].includes(fieldName)) {
+            const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (value && !regex.test(value)) {
+                errorMessage = 'Invalid email format';
+            }
+        }
+
+        // PHONE VALIDATION
+        if (['Pin__c'].includes(fieldName)) {
+            const regex = /^[0-9]{6}$/;
+
+            if (value && !regex.test(value)) {
+                errorMessage = 'Enter valid pin number number';
+            }
+        }
+
+        // SET ERROR
+        field.setCustomValidity(errorMessage);
+        field.reportValidity();
+    }
+
     // HANDLE OTHER INPUTS
     handleChange(event) {
         this.record[event.target.dataset.field] = event.target.value;
@@ -118,6 +159,9 @@ export default class FormContact extends LightningElement {
                 input.value = null;
             }
         });
+    }
+    get isViewMode() {
+        return this.mode === 'view';
     }
 
     showToast(title, message, variant) {
