@@ -1,15 +1,22 @@
-import { LightningElement, track } from 'lwc';
+import { LightningElement, track, wire } from 'lwc';
 import getRecords from '@salesforce/apex/AadharController.getRecords';
 import deleteRecords from '@salesforce/apex/AadharController.deleteRecords';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
+import AADHAR_OBJECT from '@salesforce/schema/Aadhar_Entry__c';
+import { getObjectInfo, getPicklistValuesByRecordType } from 'lightning/uiObjectInfoApi';
 export default class AadharListView extends LightningElement {
 
     @track data = [];
     @track selectedRows = [];
 
-    selectedState = '';
-    selectedCity = '';
+    @track stateOptions = [];
+    @track cityOptions = [];
+
+    allCityValues;
+
+    sState = null;
+    sCity = null;
 
     pageSize = 10;
     offset = 0;
@@ -26,29 +33,85 @@ export default class AadharListView extends LightningElement {
         this.loadData();
     }
 
-    // LOAD DATA
+    // LOAD DATA WITH FILTER
     loadData() {
         getRecords({
-            state: this.selectedState,
-            city: this.selectedCity,
+            state: this.sState,
+            city: this.sCity,
             limitSize: this.pageSize,
             offsetVal: this.offset
         })
-            .then(result => {
-                this.data = result;
-            })
-            .catch(error => {
-                this.showToast('Error', error.body.message, 'error');
-            });
+        .then(result => {
+            this.data = result;
+        })
+        .catch(error => {
+            this.showToast('Error', error.body.message, 'error');
+        });
     }
 
-    //FILTER
-    handleStateChange(e) {
-        this.selectedState = e.detail.value;
+    // OBJECT INFO
+    @wire(getObjectInfo, { objectApiName: AADHAR_OBJECT })
+    objectInfo;
+
+    // PICKLIST VALUES
+    @wire(getPicklistValuesByRecordType, {
+        objectApiName: AADHAR_OBJECT,
+        recordTypeId: '$objectInfo.data.defaultRecordTypeId'
+    })
+    wiredPicklists({ data, error }) {
+        if (data) {
+
+            // STATE OPTIONS
+            this.stateOptions = data.picklistFieldValues.State__c.values.map(item => ({
+                label: item.label,
+                value: item.value
+            }));
+
+            // STORE CITY METADATA
+            this.allCityValues = data.picklistFieldValues.City__c;
+        }
     }
 
-    handleCityChange(e) {
-        this.selectedCity = e.detail.value;
+    // STATE CHANGE
+    handleStateChange(event) {
+
+        this.sState = event.detail.value;
+        this.sCity = null; // reset city
+        this.offset = 0;
+
+        this.setCities(this.sState);
+        this.loadData();
+    }
+
+    // CITY FILTERING (DEPENDENT PICKLIST)
+    setCities(stateValue) {
+
+        const controllerValues = this.allCityValues.controllerValues;
+        const key = controllerValues[stateValue];
+
+        this.cityOptions = this.allCityValues.values
+            .filter(city => city.validFor.includes(key))
+            .map(city => ({
+                label: city.label,
+                value: city.value
+            }));
+    }
+
+    // CITY CHANGE
+    handleCityChange(event) {
+
+        this.sCity = event.detail.value;
+        this.offset = 0;
+
+        this.loadData();
+    }
+
+    resetFilter() {
+        this.sState = null;
+        this.sCity = null;
+        this.offset = 0;
+        this.cityOptions = [];
+        this.loadData();
     }
 
     // PAGINATION
@@ -99,6 +162,7 @@ export default class AadharListView extends LightningElement {
         element.click();
     }
 
+    // TOAST
     showToast(title, message, variant) {
         this.dispatchEvent(new ShowToastEvent({ title, message, variant }));
     }

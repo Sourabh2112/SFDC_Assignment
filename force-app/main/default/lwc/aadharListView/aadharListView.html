@@ -2,24 +2,24 @@
 
     <lightning-card title="Aadhar Records">
 
-        <!-- 🔴 FILTER -->
+        <!-- FILTER -->
         <div class="slds-grid slds-gutters slds-p-around_medium">
 
             <lightning-combobox
                 label="State"
-                value={selectedState}
+                value={sState}
                 options={stateOptions}
                 onchange={handleStateChange}>
             </lightning-combobox>
 
             <lightning-combobox
                 label="City"
-                value={selectedCity}
+                value={sCity}
                 options={cityOptions}
                 onchange={handleCityChange}>
             </lightning-combobox>
 
-            <lightning-button label="Search" onclick={loadData}></lightning-button>
+            <lightning-button label="Reset" onclick={resetFilter}></lightning-button>
 
             <!-- EXPORT -->
             <lightning-button 
@@ -31,7 +31,7 @@
 
         </div>
 
-        <!-- 🔴 TABLE -->
+        <!-- TABLE -->
         <lightning-datatable
             key-field="Id"
             data={data}
@@ -39,13 +39,13 @@
             onrowselection={handleRowSelection}>
         </lightning-datatable>
 
-        <!-- 🔴 PAGINATION -->
+        <!-- PAGINATION -->
         <div class="slds-p-around_medium slds-align_absolute-center">
             <lightning-button label="Previous" onclick={handlePrev}></lightning-button>
             <lightning-button label="Next" onclick={handleNext}></lightning-button>
         </div>
 
-        <!-- 🔴 ACTION BUTTONS -->
+        <!-- ACTION BUTTONS -->
         <div class="slds-p-around_medium slds-align_absolute-center">
 
             <lightning-button label="Edit" onclick={handleEdit}></lightning-button>
