@@ -105,15 +105,11 @@ export default class CsvUploader extends LightningElement {
             ? processUpdateCSV
             : processInsertCSV;
 
-        action({ csvData: this.fileData }) // SAME OLD FLOW
-            .then((result) => {
+        action({ csvData: this.fileData })
+            .then((jobId) => {
 
-                if (result && result.length > 0) {
-                    this.showToast('Error', result.join(', '), 'error');
-                } else {
-                    this.showToast('Success', 'Processed successfully', 'success');
-                }
-
+                this.jobId = jobId;
+                this.showToast('Success', 'Batch started successfully', 'success');
                 this.showPreview = false;
             })
             .catch(err => {

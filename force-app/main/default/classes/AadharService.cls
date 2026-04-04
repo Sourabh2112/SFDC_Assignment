@@ -169,4 +169,10 @@ public with sharing class AadharService {
 
         return errors;
     }
+
+    public static void processBulkAsync(List<Aadhar_Entry__c> records, Boolean isUpdate) {
+        if (records.isEmpty()) return;
+        AadharBatch batch = new AadharBatch(records, isUpdate);
+        Database.executeBatch(batch, 200); // chunk size
+    }
 }

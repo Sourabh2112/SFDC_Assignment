@@ -31,17 +31,33 @@ public with sharing class AadharController {
     }
 
     // CSV INSERT
+    // @AuraEnabled
+    // public static List<String> processInsertCSV(String csvData) {
+    //     List<Aadhar_Entry__c> records = CSVParser.parse(csvData, 'PERSONAL');
+    //     return AadharService.processInsert(records);
+    // }
+
+    //CSV Bulk insert
     @AuraEnabled
-    public static List<String> processInsertCSV(String csvData) {
+    public static String processInsertCSV(String csvData) {
         List<Aadhar_Entry__c> records = CSVParser.parse(csvData, 'PERSONAL');
-        return AadharService.processInsert(records);
+        AadharService.processBulkAsync(records, false);
+        return 'Batch Job Started';
     }
 
     //CSV UPDATE (ID BASED)
+    // @AuraEnabled
+    // public static List<String> processUpdateCSV(String csvData) {
+    //     List<Aadhar_Entry__c> records = CSVParser.parse(csvData, 'CONTACT_UPDATE');
+    //     return AadharService.processUpdate(records);
+    // }
+
+    //CSV Bulk update
     @AuraEnabled
-    public static List<String> processUpdateCSV(String csvData) {
+    public static String processUpdateCSV(String csvData) {
         List<Aadhar_Entry__c> records = CSVParser.parse(csvData, 'CONTACT_UPDATE');
-        return AadharService.processUpdate(records);
+        AadharService.processBulkAsync(records, true);
+        return 'Batch Job Started';
     }
     
     @AuraEnabled(cacheable=true)
