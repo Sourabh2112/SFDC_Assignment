@@ -1,5 +1,6 @@
 import { LightningElement, track, wire } from 'lwc';
 import getRecords from '@salesforce/apex/AadharController.getRecords';
+import getExportData from '@salesforce/apex/AadharController.getExportData';
 import deleteRecords from '@salesforce/apex/AadharController.deleteRecords';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { NavigationMixin } from 'lightning/navigation';
@@ -11,6 +12,7 @@ export default class AadharListView extends NavigationMixin(LightningElement) {
 
     // DATA
     @track data = [];
+    @track exporData = [];
     @track selectedRows = [];
 
     // FILTER
@@ -53,6 +55,7 @@ export default class AadharListView extends NavigationMixin(LightningElement) {
     //  INIT
     connectedCallback() {
         this.loadData();
+        this.loadAllData();
     }
 
     // LOAD DATA
@@ -65,6 +68,16 @@ export default class AadharListView extends NavigationMixin(LightningElement) {
         })
             .then(result => {
                 this.data = result;
+            })
+            .catch(error => {
+                this.showToast('Error', error.body.message, 'error');
+            });
+    }
+
+    loadAllData() {
+        getExportData()
+            .then(result => {
+                this.exporData = result;
             })
             .catch(error => {
                 this.showToast('Error', error.body.message, 'error');
@@ -211,16 +224,34 @@ export default class AadharListView extends NavigationMixin(LightningElement) {
     // EXPORT
     handleExport() {
 
-        let csv = 'Name,Email,Contact,City,State\n';
+        // HEADER
+        let csv = 'Id, Name, First_Name, Last_Name, Email, Contact_Number, City, State\n';
+        
+        // ROW DATA
+        this.exporData.forEach(row => {
 
-        this.data.forEach(row => {
-            csv += `${row.Name},${row.Email__c},${row.Contact_Number__c},${row.City__c},${row.State__c}\n`;
+            let line = [
+                row.Id || '',
+                row.Name || '',
+                row.First_Name__c || '',
+                row.Last_Name__c || '',
+                row.Email__c || '',
+                row.Contact_Number__c || '',
+                row.City__c || '',
+                row.State__c || '',
+            ].join(',');
+
+            csv += line + '\n'; // IMPORTANT
         });
 
+        // CREATE FILE
         const element = document.createElement('a');
         element.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-        element.download = 'AadharData.xls';
+        element.download = 'AadharData.csv'; // use .csv not .xls
+
+        document.body.appendChild(element);
         element.click();
+        document.body.removeChild(element);
     }
 
     //  TOAST

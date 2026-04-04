@@ -77,6 +77,16 @@ public with sharing class AadharController {
     }
 
     @AuraEnabled
+    public static List<Aadhar_Entry__c> getExportData(){
+        try {
+            string querry = 'Select Id, Name, First_Name__c, Last_Name__c, Email__c, Contact_Number__c, City__c, State__c FROM Aadhar_Entry__c';
+            return Database.query(querry);
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+
+    @AuraEnabled
     public static void deleteRecords(List<Id> recordIds) {
 
         List<Aadhar_Entry__c> records = [
