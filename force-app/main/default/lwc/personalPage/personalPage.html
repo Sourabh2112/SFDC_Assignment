@@ -1,19 +1,22 @@
 <template>
     <lightning-card title="Personal Details">
 
-        <lightning-layout multiple-rows>
+        <div class="container">
 
             <!-- LEFT: FORM -->
-            <lightning-layout-item size="12" medium-device-size="6">
+            <div class="section">
                 <c-form-personal onrefresh={handleRefresh}></c-form-personal>
-            </lightning-layout-item>
+            </div>
+
+            <!-- DIVIDER -->
+            <div class="divider"></div>
 
             <!-- RIGHT: CSV -->
-            <lightning-layout-item size="12" medium-device-size="6">
+            <div class="section">
                 <c-csv-uploader mode="insert" onrefresh={handleRefresh}></c-csv-uploader>
-            </lightning-layout-item>
+            </div>
 
-        </lightning-layout>
+        </div>
 
     </lightning-card>
 </template>

@@ -3,20 +3,21 @@
     <lightning-card title="Aadhar Records">
 
         <!-- FILTER -->
-        <div class="slds-grid slds-gutters slds-p-around_medium">
+        <div class="slds-grid slds-gutters slds-p-around_medium header-bar">
+            <div class="filters">
+                <lightning-combobox label="State" value={sState} options={stateOptions} onchange={handleStateChange}>
+                </lightning-combobox>
 
-            <lightning-combobox label="State" value={sState} options={stateOptions} onchange={handleStateChange}>
-            </lightning-combobox>
+                <lightning-combobox label="City" value={sCity} options={cityOptions} onchange={handleCityChange}>
+                </lightning-combobox>
 
-            <lightning-combobox label="City" value={sCity} options={cityOptions} onchange={handleCityChange}>
-            </lightning-combobox>
-
-            <lightning-button label="Reset" onclick={resetFilter}></lightning-button>
-
+                <lightning-button label="Reset" onclick={resetFilter}></lightning-button>
+            </div>
             <!-- EXPORT -->
-            <lightning-button label="Export XLS" variant="brand" class="slds-m-left_auto" onclick={handleExport}>
-            </lightning-button>
-
+            <div>
+                <lightning-button label="Export XLS" variant="brand" class="slds-m-left_auto" onclick={handleExport}>
+                </lightning-button>
+            </div>
         </div>
 
         <!-- TABLE -->
@@ -26,20 +27,28 @@
 
         <!-- PAGINATION -->
         <div class="slds-p-around_medium slds-align_absolute-center">
-            <lightning-button label="Previous" onclick={handlePrev}></lightning-button>
-            <lightning-button label="Next" onclick={handleNext}></lightning-button>
-        </div>
 
-        <!-- ACTION BUTTONS -->
-        <div class="slds-p-around_medium slds-align_absolute-center">
+            <lightning-button label="Previous" onclick={handlePrev} disabled={disabledPrev}>
+            </lightning-button>
 
-            <lightning-button label="Edit" onclick={handleEdit}></lightning-button>
+            <template for:each={pages} for:item="page">
+                <lightning-button key={page.value} label={page.label} data-page={page.value} onclick={handlePageClick}
+                    variant={page.variant} class="slds-m-horizontal_x-small">
+                </lightning-button>
+            </template>
 
-            <lightning-button label="Delete" variant="destructive" onclick={handleDelete}>
+            <lightning-button label="Next" onclick={handleNext} disabled={disabledNext}>
             </lightning-button>
 
         </div>
 
+        <!-- ACTION BUTTONS -->
+        <div class="footer-bar">
+            <div class="slds-p-around_medium slds-align_absolute-center">
+                <lightning-button label="Delete" variant="destructive" onclick={handleDelete}>
+                </lightning-button>
+            </div>
+        </div>
         <template if:true={showModal}>
             <section role="dialog" class="slds-modal slds-fade-in-open">
                 <div class="slds-modal__container">

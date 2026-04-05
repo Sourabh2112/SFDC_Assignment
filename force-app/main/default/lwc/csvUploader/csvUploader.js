@@ -7,23 +7,19 @@ export default class CsvUploader extends LightningElement {
 
     @api mode; // 'insert' or 'update'
 
-    fileData = '';        // raw CSV (for Apex)
-    previewData = [];     // parsed data (for UI)
+    fileData = '';       
+    previewData = [];     
     showPreview = false;
     columns = [];
 
-    // FILE UPLOAD (STORE ONLY)
+    // FILE UPLOAD 
     handleFile(event) {
         const file = event.target.files[0];
-
         if (!file) return;
-
         const reader = new FileReader();
-
         reader.onload = () => {
             this.fileData = reader.result;
         };
-
         reader.readAsText(file);
     }
 
@@ -48,7 +44,6 @@ export default class CsvUploader extends LightningElement {
 
             if (!lines[i] || lines[i].trim() === '') continue;
 
-            // CLEAN VALUES (FIXES LAST COLUMN ISSUE)
             const values = lines[i]
                 .split(',')
                 .map(v => v.replace(/\r/g, '').trim());
@@ -98,7 +93,7 @@ export default class CsvUploader extends LightningElement {
         this.previewData = [];
     }
 
-    // INSERT / UPDATE (OLD LOGIC)
+    // INSERT / UPDATE 
     handleInsert() {
 
         const action = this.mode === 'update'

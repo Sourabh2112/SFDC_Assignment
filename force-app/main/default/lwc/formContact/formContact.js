@@ -68,7 +68,6 @@ export default class FormContact extends LightningElement {
 
     // FILTER CITY BASED ON STATE
     setCities(stateValue) {
-
         this.selectedStateIndex = this.stateOptions.findIndex(
             state => state.value === stateValue
         );

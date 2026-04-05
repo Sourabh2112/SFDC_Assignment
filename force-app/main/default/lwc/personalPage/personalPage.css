@@ -1,0 +1,18 @@
+.container {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+}
+
+/* LEFT & RIGHT */
+.section {
+    flex: 1;
+}
+
+/* DIVIDER WITH GAP */
+.divider {
+    width: 3px;
+    border-left: 1px solid #040404;;
+    margin: 0 20px;   /* left-right spacing */
+    height: 80%;      /* DOES NOT TOUCH TOP/BOTTOM */
+}

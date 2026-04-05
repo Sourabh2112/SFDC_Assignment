@@ -86,6 +86,18 @@ public with sharing class AadharController {
         }
     }
 
+    @AuraEnabled(cacheable=true)
+    public static Integer getTotalCount(String state, String city) {
+        String query = 'SELECT COUNT() FROM Aadhar_Entry__c WHERE 1=1';
+        if (state != null) {
+            query += ' AND State__c = :state';
+        }
+        if (city != null) {
+            query += ' AND City__c = :city';
+        }
+        return Database.countQuery(query);
+    }
+
     @AuraEnabled
     public static void deleteRecords(List<Id> recordIds) {
 

@@ -60,15 +60,13 @@ export default class FormPersonal extends NavigationMixin(LightningElement) {
         }
 
         createPersonal({ rec: this.record })
-            .then((recordId) => {   // CAPTURE ID
-
+            .then((recordId) => {   
                 this.showToast('Success', 'Saved', 'success');
 
-                // REDIRECT
                 this[NavigationMixin.Navigate]({
                     type: 'standard__recordPage',
                     attributes: {
-                        recordId: recordId,   // NOW VALID
+                        recordId: recordId,   
                         objectApiName: 'Aadhar_Entry__c',
                         actionName: 'view'
                     }

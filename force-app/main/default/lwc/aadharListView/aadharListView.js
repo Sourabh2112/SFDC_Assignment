@@ -2,6 +2,7 @@ import { LightningElement, track, wire } from 'lwc';
 import getRecords from '@salesforce/apex/AadharController.getRecords';
 import getExportData from '@salesforce/apex/AadharController.getExportData';
 import deleteRecords from '@salesforce/apex/AadharController.deleteRecords';
+import getTotalCount from '@salesforce/apex/AadharController.getTotalCount';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { NavigationMixin } from 'lightning/navigation';
 
@@ -26,6 +27,11 @@ export default class AadharListView extends NavigationMixin(LightningElement) {
     // PAGINATION
     pageSize = 10;
     offset = 0;
+    totalRecords = 0;
+    currentPage = 1;
+    totalPages = 1;
+    disabledPrev = true;
+    disabledNext = false;
 
     // EDIT MODAL
     showModal = false;
@@ -56,6 +62,7 @@ export default class AadharListView extends NavigationMixin(LightningElement) {
     connectedCallback() {
         this.loadData();
         this.loadAllData();
+        this.loadCount();
     }
 
     // LOAD DATA
@@ -82,6 +89,38 @@ export default class AadharListView extends NavigationMixin(LightningElement) {
             .catch(error => {
                 this.showToast('Error', error.body.message, 'error');
             });
+    }
+
+    loadCount() {
+        getTotalCount({
+            state: this.sState,
+            city: this.sCity
+        })
+            .then(result => {
+                this.totalRecords = result;
+                this.totalPages = Math.ceil(result / this.pageSize);
+            });
+    }
+
+    get pages() {
+        let pages = [];
+        for (let i = 1; i <= this.totalPages; i++) {
+            pages.push({
+                label: i,
+                value: i,
+                variant: i === this.currentPage ? 'brand' : 'neutral'
+            });
+        }
+        return pages;
+    }
+
+    handlePageClick(event) {
+        const page = Number(event.target.dataset.page);
+
+        this.currentPage = page;
+        this.offset = (page - 1) * this.pageSize;
+
+        this.loadData();
     }
 
     // OBJECT INFO
@@ -139,14 +178,24 @@ export default class AadharListView extends NavigationMixin(LightningElement) {
 
     // PAGINATION
     handleNext() {
-        this.offset += this.pageSize;
-        this.loadData();
+        if (this.currentPage < this.totalPages) {
+            this.currentPage++;
+            this.offset += this.pageSize;
+            this.loadData();
+            this.disabledNext = false;
+        } else if (this.currentPage === this.totalPages) {
+            this.disabledNext = true;
+        }
     }
 
     handlePrev() {
-        if (this.offset >= this.pageSize) {
+        if (this.currentPage > 1) {
+            this.currentPage--;
             this.offset -= this.pageSize;
             this.loadData();
+            this.disabledPrev = false;
+        } else if (this.currentPage === 1) {
+            this.disabledPrev = true;
         }
     }
 
@@ -226,7 +275,7 @@ export default class AadharListView extends NavigationMixin(LightningElement) {
 
         // HEADER
         let csv = 'Id, Name, First_Name, Last_Name, Email, Contact_Number, City, State\n';
-        
+
         // ROW DATA
         this.exporData.forEach(row => {
 
@@ -252,6 +301,12 @@ export default class AadharListView extends NavigationMixin(LightningElement) {
         document.body.appendChild(element);
         element.click();
         document.body.removeChild(element);
+    }
+
+    resetFilter() {
+        this.sState = null;
+        this.sCity = null;
+        this.loadData();
     }
 
     //  TOAST
