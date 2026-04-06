@@ -71,29 +71,29 @@ public with sharing class AadharService {
     }
 
     // BULK INSERT
-    public static List<String> processInsert(List<Aadhar_Entry__c> records) {
+    // public static List<String> processInsert(List<Aadhar_Entry__c> records) {
 
-        List<Aadhar_Entry__c> validList = new List<Aadhar_Entry__c>();
-        List<String> errors = new List<String>();
+    //     List<Aadhar_Entry__c> validList = new List<Aadhar_Entry__c>();
+    //     List<String> errors = new List<String>();
 
-        for(Aadhar_Entry__c rec : records) {
+    //     for(Aadhar_Entry__c rec : records) {
 
-            List<String> recErrors = AadharValidator.validate(rec);
+    //         List<String> recErrors = AadharValidator.validate(rec);
 
-            if(!recErrors.isEmpty()) {
-                errors.add('Insert Error: ' + String.join(recErrors, ', '));
-                continue;
-            }
+    //         if(!recErrors.isEmpty()) {
+    //             errors.add('Insert Error: ' + String.join(recErrors, ', '));
+    //             continue;
+    //         }
 
-            validList.add(rec);
-        }
+    //         validList.add(rec);
+    //     }
 
-        if(!validList.isEmpty()) {
-            insert validList;
-        }
+    //     if(!validList.isEmpty()) {
+    //         insert validList;
+    //     }
 
-        return errors;
-    }
+    //     return errors;
+    // }
 
     // BULK UPDATE (ID BASED)
     public static List<String> processUpdate(List<Aadhar_Entry__c> records) {
@@ -152,26 +152,29 @@ public with sharing class AadharService {
             }
 
             // Validate FULL record
-            List<String> recErrors = AadharValidator.validate(existing);
+            // List<String> recErrors = AadharValidator.validate(existing);
 
-            if(!recErrors.isEmpty()) {
-                errors.add('Update Error (Id: ' + rec.Id + '): ' + String.join(recErrors, ', '));
-                continue;
-            }
+            // if(!recErrors.isEmpty()) {
+            //     errors.add('Update Error (Id: ' + rec.Id + '): ' + String.join(recErrors, ', '));
+            //     continue;
+            // }
 
             validList.add(existing);
         }
 
         // Bulk update
         if(!validList.isEmpty()) {
-            update validList;
+            processBulkAsync(validList, true);
+            //update validList;
         }
 
         return errors;
     }
 
     public static void processBulkAsync(List<Aadhar_Entry__c> records, Boolean isUpdate) {
-        if (records.isEmpty()) return;
+        if (records.isEmpty()){ 
+            return; 
+        }
         AadharBatch batch = new AadharBatch(records, isUpdate);
         Database.executeBatch(batch, 200); // chunk size
     }

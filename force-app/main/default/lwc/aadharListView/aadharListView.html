@@ -17,6 +17,9 @@
             <div>
                 <lightning-button label="Export XLS" variant="brand" class="slds-m-left_auto" onclick={handleExport}>
                 </lightning-button>
+                <lightning-button label="Import COntact CSV" variant="brand" class="slds-m-left_auto"
+                    onclick={handleImport}>
+                </lightning-button>
             </div>
         </div>
 
@@ -49,6 +52,7 @@
                 </lightning-button>
             </div>
         </div>
+
         <template if:true={showModal}>
             <section role="dialog" class="slds-modal slds-fade-in-open">
                 <div class="slds-modal__container">
@@ -73,6 +77,38 @@
                             <c-contact-page record-id={selectedRecordId} onclose={handleCloseModal}>
                             </c-contact-page>
                         </template>
+
+                    </div>
+
+                    <!-- FOOTER -->
+                    <footer class="slds-modal__footer">
+                        <lightning-button label="Close" onclick={handleCloseModal}></lightning-button>
+                    </footer>
+
+                </div>
+            </section>
+
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+
+        <template if:true={showCSV}>
+            <section role="dialog" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+
+                    <!-- HEADER -->
+                    <header class="slds-modal__header">
+                        <h2 class="slds-text-heading_medium">
+                            CSV Load
+                        </h2>
+                    </header>
+
+                    <!-- BODY -->
+                    <div class="slds-modal__content slds-p-around_medium">
+
+                        <!-- VIEW COMPONENT -->
+                        <lightning-layout-item size="12" medium-device-size="6">
+                            <c-csv-uploader mode="update"></c-csv-uploader>
+                        </lightning-layout-item>
 
                     </div>
 

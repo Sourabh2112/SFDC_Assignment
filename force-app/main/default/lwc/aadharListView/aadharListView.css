@@ -1,12 +1,12 @@
 .header-bar {
     display: flex;
-    justify-content: space-between; /* 🔥 pushes to extreme ends */
+    justify-content: space-between; /*pushes to extreme ends */
     align-items: center;
     padding: 30px;
 }
 
 .footer-bar {
     display: flex;
-    justify-content: flex-end; /* 🔥 push to right */
+    justify-content: flex-end; /* push to right */
     margin-top: 10px;
 }

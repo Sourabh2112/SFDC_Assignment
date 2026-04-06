@@ -56,7 +56,8 @@ public with sharing class AadharController {
     @AuraEnabled
     public static String processUpdateCSV(String csvData) {
         List<Aadhar_Entry__c> records = CSVParser.parse(csvData, 'CONTACT_UPDATE');
-        AadharService.processBulkAsync(records, true);
+        AadharService.processUpdate(records);
+        //AadharService.processBulkAsync(records, true);
         return 'Batch Job Started';
     }
     
@@ -88,9 +89,9 @@ public with sharing class AadharController {
 
     @AuraEnabled(cacheable=true)
     public static Integer getTotalCount(String state, String city) {
-        String query = 'SELECT COUNT() FROM Aadhar_Entry__c WHERE 1=1';
+        String query = 'SELECT COUNT() FROM Aadhar_Entry__c';
         if (state != null) {
-            query += ' AND State__c = :state';
+            query += ' WHERE State__c = :state';
         }
         if (city != null) {
             query += ' AND City__c = :city';

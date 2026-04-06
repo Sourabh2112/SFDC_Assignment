@@ -35,7 +35,8 @@ export default class AadharListView extends NavigationMixin(LightningElement) {
 
     // EDIT MODAL
     showModal = false;
-    modalMode = ''; // view / edit
+    showCSV = false;
+    modalMode = '';
     isViewMode = false;
     isEditMode = false;
     selectedRecordId;
@@ -104,13 +105,35 @@ export default class AadharListView extends NavigationMixin(LightningElement) {
 
     get pages() {
         let pages = [];
-        for (let i = 1; i <= this.totalPages; i++) {
+        let startPage, endPage;
+
+        // Total buttons to show
+        const maxVisible = 3;
+
+        // Calculate window
+        if (this.totalPages <= maxVisible) {
+            startPage = 1;
+            endPage = this.totalPages;
+        } else if (this.currentPage <= 2) {
+            startPage = 1;
+            endPage = 3;
+        } else if (this.currentPage >= this.totalPages - 1) {
+            startPage = this.totalPages - 2;
+            endPage = this.totalPages;
+        } else {
+            startPage = this.currentPage - 1;
+            endPage = this.currentPage + 1;
+        }
+
+        // Create page buttons
+        for (let i = startPage; i <= endPage; i++) {
             pages.push({
                 label: i,
                 value: i,
                 variant: i === this.currentPage ? 'brand' : 'neutral'
             });
         }
+
         return pages;
     }
 
@@ -151,9 +174,13 @@ export default class AadharListView extends NavigationMixin(LightningElement) {
         this.sState = event.detail.value;
         this.sCity = null;
         this.offset = 0;
+        this.totalRecords = 0;
+        this.currentPage = 1;
+        this.totalPages = 1;
 
         this.setCities(this.sState);
         this.loadData();
+        this.loadCount();
     }
 
     // DEPENDENT CITY
@@ -173,7 +200,12 @@ export default class AadharListView extends NavigationMixin(LightningElement) {
     handleCityChange(event) {
         this.sCity = event.detail.value;
         this.offset = 0;
+        this.totalRecords = 0;
+        this.currentPage = 1;
+        this.totalPages = 1;
+
         this.loadData();
+        this.loadCount();
     }
 
     // PAGINATION
@@ -183,7 +215,9 @@ export default class AadharListView extends NavigationMixin(LightningElement) {
             this.offset += this.pageSize;
             this.loadData();
             this.disabledNext = false;
-        } else if (this.currentPage === this.totalPages) {
+            this.disabledPrev = false;
+        }
+        if (this.currentPage === this.totalPages) {
             this.disabledNext = true;
         }
     }
@@ -194,7 +228,9 @@ export default class AadharListView extends NavigationMixin(LightningElement) {
             this.offset -= this.pageSize;
             this.loadData();
             this.disabledPrev = false;
-        } else if (this.currentPage === 1) {
+            this.disabledNext = false;
+        }
+        if (this.currentPage === 1) {
             this.disabledPrev = true;
         }
     }
@@ -245,6 +281,7 @@ export default class AadharListView extends NavigationMixin(LightningElement) {
     // CLOSE MODAL
     handleCloseModal() {
         this.showModal = false;
+        this.showCSV = false;
         this.isEditMode = false;
         this.isViewMode = false;
         this.loadData(); // refresh table
@@ -272,7 +309,6 @@ export default class AadharListView extends NavigationMixin(LightningElement) {
 
     // EXPORT
     handleExport() {
-
         // HEADER
         let csv = 'Id, Name, First_Name, Last_Name, Email, Contact_Number, City, State\n';
 
@@ -290,7 +326,7 @@ export default class AadharListView extends NavigationMixin(LightningElement) {
                 row.State__c || '',
             ].join(',');
 
-            csv += line + '\n'; // IMPORTANT
+            csv += line + '\n';
         });
 
         // CREATE FILE
@@ -303,10 +339,20 @@ export default class AadharListView extends NavigationMixin(LightningElement) {
         document.body.removeChild(element);
     }
 
+    handleImport() {
+        this.showCSV = true;
+    }
+
     resetFilter() {
         this.sState = null;
         this.sCity = null;
+        this.offset = 0;
+        this.totalRecords = 0;
+        this.currentPage = 1;
+        this.totalPages = 1;
+
         this.loadData();
+        this.loadCount();
     }
 
     //  TOAST
