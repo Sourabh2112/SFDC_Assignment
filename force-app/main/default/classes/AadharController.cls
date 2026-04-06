@@ -30,13 +30,6 @@ public with sharing class AadharController {
         AadharService.updateContact(recordId, rec);
     }
 
-    // CSV INSERT
-    // @AuraEnabled
-    // public static List<String> processInsertCSV(String csvData) {
-    //     List<Aadhar_Entry__c> records = CSVParser.parse(csvData, 'PERSONAL');
-    //     return AadharService.processInsert(records);
-    // }
-
     //CSV Bulk insert
     @AuraEnabled
     public static String processInsertCSV(String csvData) {
@@ -45,19 +38,12 @@ public with sharing class AadharController {
         return 'Batch Job Started';
     }
 
-    //CSV UPDATE (ID BASED)
-    // @AuraEnabled
-    // public static List<String> processUpdateCSV(String csvData) {
-    //     List<Aadhar_Entry__c> records = CSVParser.parse(csvData, 'CONTACT_UPDATE');
-    //     return AadharService.processUpdate(records);
-    // }
-
     //CSV Bulk update
     @AuraEnabled
     public static String processUpdateCSV(String csvData) {
         List<Aadhar_Entry__c> records = CSVParser.parse(csvData, 'CONTACT_UPDATE');
-        AadharService.processUpdate(records);
-        //AadharService.processBulkAsync(records, true);
+        //AadharService.processUpdate(records);
+        AadharService.processBulkAsync(records, true);
         return 'Batch Job Started';
     }
     

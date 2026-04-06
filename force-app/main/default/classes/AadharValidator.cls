@@ -1,51 +1,53 @@
-public with sharing class AadharValidator {
+public class AadharValidator {
 
-    public static List<String> validate(Aadhar_Entry__c rec) {
+    public static List<String> validateInsert(Aadhar_Entry__c rec) {
 
         List<String> errors = new List<String>();
 
-        // FIRST NAME (MANDATORY + FORMAT)
-        if(String.isBlank(rec.First_Name__c)) {
-            errors.add('First Name is required');
-        } else if(!Pattern.matches('^[a-zA-Z]+$', rec.First_Name__c)) {
-            errors.add('First Name must contain only alphabets');
+        if (!isAlpha(rec.First_Name__c)) {
+            errors.add('Invalid First Name');
         }
-
-        //MIDDLE NAME (OPTIONAL + FORMAT)
-        if(!String.isBlank(rec.Middle_Name__c)){
-           if(!Pattern.matches('^[a-zA-Z]+$', rec.Middle_Name__c)){
-            errors.add('Middle Name must contain only alphabets');
-           }
+        if (!isAlpha(rec.Last_Name__c)) {
+            errors.add('Invalid Last Name');
         }
-
-        // LAST NAME (MANDATORY + FORMAT)
-        if(String.isBlank(rec.Last_Name__c)) {
-            errors.add('Last Name is required');
-        } else if(!Pattern.matches('^[a-zA-Z]+$', rec.Last_Name__c)) {
-            errors.add('Last Name must contain only alphabets');
-        }
-
-        if(rec.DOB__c == null) {
-            errors.add('DOB required');
-        }
-        // CONTACT
-        if(rec.Contact_Number__c != null &&
-        !Pattern.matches('\\d{10}', rec.Contact_Number__c)) {
-            errors.add('Invalid Contact Number');
-        }
-
-        // PIN
-        if(rec.Pin__c != null &&
-        !Pattern.matches('\\d{6}', rec.Pin__c)) {
-            errors.add('Invalid Pin');
-        }
-
-        // Email
-        if(rec.Email__c != null &&
-           !Pattern.matches('^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$', rec.Email__c)) {
-            errors.add('Invalid Email');
+        if (rec.DOB__c != null && rec.DOB__c > Date.today()) {
+            errors.add('Future DOB not allowed');
         }
 
         return errors;
+    }
+
+    public static List<String> validateUpdate(Aadhar_Entry__c rec) {
+
+        List<String> errors = new List<String>();
+
+        if (rec.Email__c != null &&
+            (!rec.Email__c.contains('@') || !rec.Email__c.contains('.'))) {
+            errors.add('Invalid Email');
+        }
+        if (rec.Contact_Number__c != null &&
+            (rec.Contact_Number__c.length() != 10 || !rec.Contact_Number__c.isNumeric())) {
+            errors.add('Invalid Contact Number');
+        }
+        if (rec.Pin__c != null && rec.Pin__c.length() != 6) {
+            errors.add('Invalid PIN');
+        }
+
+        return errors;
+    }
+
+    private static Boolean isAlpha(String value) {
+
+        if (String.isBlank(value)) return false;
+
+        for (Integer i = 0; i < value.length(); i++) {
+            String ch = value.substring(i, i+1);
+
+            if (!((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z'))) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
