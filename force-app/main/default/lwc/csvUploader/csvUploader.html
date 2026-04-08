@@ -1,5 +1,5 @@
 <template>
-    <lightning-card title="CSV Upload">
+    <lightning-card>
 
         <div class="slds-p-around_medium">
 
@@ -23,8 +23,8 @@
             <div class="slds-modal__container">
 
                 <!-- HEADER -->
-                <header class="slds-modal__header">
-                    <h2 class="slds-text-heading_medium">CSV Preview</h2>
+                <header class="slds-modal__header preview">
+                    <h2 class="slds-text-heading_medium title-text">CSV Preview</h2>
                 </header>
 
                 <!-- BODY -->
@@ -39,14 +39,13 @@
                 </div>
 
                 <!-- FOOTER -->
-                <footer class="slds-modal__footer">
+                <footer class="slds-modal__footer preview">
                     <lightning-button label="Close" onclick={handleClose}>
                     </lightning-button>
 
                     <lightning-button label= {mode} variant="brand" onclick={handleInsert}>
                     </lightning-button>
                 </footer>
-
             </div>
         </section>
 

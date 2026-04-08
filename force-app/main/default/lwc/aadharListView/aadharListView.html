@@ -24,15 +24,17 @@
         </div>
 
         <!-- TABLE -->
-        <lightning-datatable key-field="Id" data={data} columns={columns} onrowselection={handleRowSelection}
-            onrowaction={handleRowAction}>
-        </lightning-datatable>
+        <!-- TABLE -->
+        <div class="datatable-wrapper">
+            <lightning-datatable key-field="Id" data={data} columns={columns} onrowselection={handleRowSelection}
+                onrowaction={handleRowAction}>
+            </lightning-datatable>
+        </div>
 
         <!-- PAGINATION -->
-        <div class="slds-p-around_medium slds-align_absolute-center">
+        <div class="slds-p-around_medium slds-align_absolute-center pagination-bar">
 
-            <lightning-button label="Previous" onclick={handlePrev} disabled={disabledPrev}>
-            </lightning-button>
+            <lightning-button label="Previous" onclick={handlePrev} disabled={disabledPrev}></lightning-button>
 
             <template for:each={pages} for:item="page">
                 <lightning-button key={page.value} label={page.label} data-page={page.value} onclick={handlePageClick}
@@ -40,8 +42,7 @@
                 </lightning-button>
             </template>
 
-            <lightning-button label="Next" onclick={handleNext} disabled={disabledNext}>
-            </lightning-button>
+            <lightning-button label="Next" onclick={handleNext} disabled={disabledNext}></lightning-button>
 
         </div>
 

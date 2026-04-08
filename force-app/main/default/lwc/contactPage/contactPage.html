@@ -1,19 +1,33 @@
 <template>
-    <lightning-card title="Contact Details">
+    <lightning-card>
 
-        <lightning-layout multiple-rows>
+        <div class="wrapper">
 
-            <!-- LEFT: FORM -->
-            <lightning-layout-item size="12" medium-device-size="6">
-                <c-form-contact record-id={recordId}></c-form-contact>
-            </lightning-layout-item>
+            <!-- CENTER TITLE -->
+            <div class="center-title">
+                <span class="title-text">Contact Details</span>
+            </div>
 
-            <!-- RIGHT: CSV -->
-            <lightning-layout-item size="12" medium-device-size="6">
-                <c-csv-uploader mode="update"></c-csv-uploader>
-            </lightning-layout-item>
+            <div class="container">
 
-        </lightning-layout>
+                <!-- LEFT PANEL -->
+                <div class="section">
+                    <c-form-contact record-id={recordId}></c-form-contact>
+                </div>
+
+                <!-- DIVIDER -->
+                <div class="divider"></div>
+
+
+                <!-- RIGHT PANEL -->
+                <div class="section right-panel">
+                    <c-csv-uploader mode="update"></c-csv-uploader>
+                </div>
+
+
+            </div>
+
+        </div>
 
     </lightning-card>
 </template>

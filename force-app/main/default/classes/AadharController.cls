@@ -33,33 +33,77 @@ public with sharing class AadharController {
     //CSV Bulk insert
     @AuraEnabled
     public static String processInsertCSV(String csvData) {
-        List<Aadhar_Entry__c> records = CSVParser.parse(csvData, 'PERSONAL');
-        AadharService.processBulkAsync(records, false);
-        return 'Batch Job Started';
+
+        Map<String, Object> payload =
+            (Map<String, Object>) JSON.deserializeUntyped(csvData);
+
+        String fileName = (String) payload.get('fileName');
+        String fileContent = (String) payload.get('fileContent');
+
+        // Save CSV as ContentVersion
+        ContentVersion cv = new ContentVersion(
+            Title = fileName,
+            PathOnClient = fileName,
+            VersionData = Blob.valueOf(fileContent)
+        );
+        insert cv;
+
+        // Start Batch (INSERT mode)
+        Database.executeBatch(
+            new AadharCSVBatch(cv.Id, 'PERSONAL'),
+            200
+        );
+
+        return cv.Id; // return job reference
     }
 
     //CSV Bulk update
     @AuraEnabled
     public static String processUpdateCSV(String csvData) {
-        List<Aadhar_Entry__c> records = CSVParser.parse(csvData, 'CONTACT_UPDATE');
-        //AadharService.processUpdate(records);
-        AadharService.processBulkAsync(records, true);
-        return 'Batch Job Started';
+
+        Map<String, Object> payload =
+            (Map<String, Object>) JSON.deserializeUntyped(csvData);
+
+        ContentVersion cv = new ContentVersion(
+            Title = (String)payload.get('fileName'),
+            PathOnClient = (String)payload.get('fileName'),
+            VersionData = Blob.valueOf((String)payload.get('fileContent'))
+        );
+        insert cv;
+
+        Database.executeBatch(
+            new AadharCSVBatch(cv.Id, 'CONTACT_UPDATE'),
+            200
+        );
+
+        return cv.Id;
     }
-    
+
     @AuraEnabled(cacheable=true)
-    public static List<Aadhar_Entry__c> getRecords(String state, String city, Integer limitSize, Integer offsetVal) {
+    public static List<Aadhar_Entry__c> getRecords(
+        String state,
+        String city,
+        Integer limitSize,
+        Id lastRecordId
+    ) {
+        String query =
+            'SELECT Id, Name, First_Name__c, Last_Name__c, Email__c, Contact_Number__c, ' +
+            'City__c, State__c, CreatedById ' +
+            'FROM Aadhar_Entry__c WHERE Id != null';
 
-        String query = 'SELECT Id, Name, First_Name__c, Last_Name__c, Email__c, Contact_Number__c, City__c, State__c, CreatedById ' +
-                    'FROM Aadhar_Entry__c WHERE Id != null';
-
-        if(String.isNotBlank(state)) {
+        if (String.isNotBlank(state)) {
             query += ' AND State__c = :state';
         }
-        if(String.isNotBlank(city)) {
+        if (String.isNotBlank(city)) {
             query += ' AND City__c = :city';
         }
-        query += ' LIMIT :limitSize OFFSET :offsetVal';
+
+        if (lastRecordId != null) {
+            query += ' AND Id > :lastRecordId';
+        }
+
+        query += ' ORDER BY Id LIMIT :limitSize';
+
         return Database.query(query);
     }
 

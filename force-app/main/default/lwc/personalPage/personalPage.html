@@ -1,19 +1,31 @@
 <template>
-    <lightning-card title="Personal Details">
+    <lightning-card>
 
-        <div class="container">
+        <div class="wrapper">
 
-            <!-- LEFT: FORM -->
-            <div class="section">
-                <c-form-personal onrefresh={handleRefresh}></c-form-personal>
+            <!-- CENTER TITLE -->
+            <div class="center-title">
+                <span class="title-text">Personal Details</span>
             </div>
 
-            <!-- DIVIDER -->
-            <div class="divider"></div>
+            <div class="container">
 
-            <!-- RIGHT: CSV -->
-            <div class="section">
-                <c-csv-uploader mode="insert" onrefresh={handleRefresh}></c-csv-uploader>
+                <!-- LEFT PANEL -->
+                <div class="section">
+                    <c-form-personal onrefresh={handleRefresh}></c-form-personal>
+                </div>
+
+                <!-- DIVIDER -->
+                <div class="divider"></div>
+
+
+                <!-- RIGHT PANEL -->
+                <div class="section right-panel">
+                    <c-csv-uploader mode="insert" onrefresh={handleRefresh}>
+                    </c-csv-uploader>
+                </div>
+
+
             </div>
 
         </div>

@@ -25,13 +25,16 @@ export default class AadharListView extends NavigationMixin(LightningElement) {
     sCity = null;
 
     // PAGINATION
-    pageSize = 10;
     offset = 0;
     totalRecords = 0;
-    currentPage = 1;
     totalPages = 1;
     disabledPrev = true;
     disabledNext = false;
+    pageCursors = new Map();
+    currentPage = 1;
+    lastRecordId = null;
+    hasNext = true;
+    pageSize = 10;
 
     // EDIT MODAL
     showModal = false;
@@ -61,9 +64,19 @@ export default class AadharListView extends NavigationMixin(LightningElement) {
 
     //  INIT
     connectedCallback() {
-        this.loadData();
+        this.initPagination();
         this.loadAllData();
         this.loadCount();
+    }
+
+    initPagination() {
+        this.currentPage = 1;
+        this.lastRecordId = null;
+        this.pageCursors = new Map();
+        this.hasNext = true;
+        this.disabledPrev = true;
+        this.disabledNext = false;
+        this.loadData();
     }
 
     // LOAD DATA
@@ -72,13 +85,25 @@ export default class AadharListView extends NavigationMixin(LightningElement) {
             state: this.sState,
             city: this.sCity,
             limitSize: this.pageSize,
-            offsetVal: this.offset
+            lastRecordId: this.lastRecordId
         })
             .then(result => {
-                this.data = result;
+                this.data = result || [];
+
+                if (this.data.length > 0) {
+                    const lastId = this.data[this.data.length - 1].Id;
+                    this.pageCursors.set(this.currentPage, lastId);
+                }
+
+                this.hasNext = this.data.length === this.pageSize;
+                this.updateButtons();
             })
             .catch(error => {
-                this.showToast('Error', error.body.message, 'error');
+                this.showToast(
+                    'Error',
+                    error?.body?.message || 'Unexpected error',
+                    'error'
+                );
             });
     }
 
@@ -140,8 +165,17 @@ export default class AadharListView extends NavigationMixin(LightningElement) {
     handlePageClick(event) {
         const page = Number(event.target.dataset.page);
 
+        if (page === this.currentPage) return;
+
+        if (page !== 1 && !this.pageCursors.has(page - 1)) {
+            this.showToast('Info', 'Navigate sequentially to load pages', 'info');
+            return;
+        }
+
         this.currentPage = page;
-        this.offset = (page - 1) * this.pageSize;
+
+        this.lastRecordId =
+            page === 1 ? null : this.pageCursors.get(page - 1);
 
         this.loadData();
     }
@@ -210,29 +244,33 @@ export default class AadharListView extends NavigationMixin(LightningElement) {
 
     // PAGINATION
     handleNext() {
-        if (this.currentPage < this.totalPages) {
-            this.currentPage++;
-            this.offset += this.pageSize;
-            this.loadData();
-            this.disabledNext = false;
-            this.disabledPrev = false;
-        }
-        if (this.currentPage === this.totalPages) {
-            this.disabledNext = true;
-        }
+        if (!this.hasNext) return;
+
+        const cursor = this.pageCursors.get(this.currentPage);
+        if (!cursor) return; // safety
+
+        this.currentPage++;
+        this.lastRecordId = cursor;
+
+        this.loadData();
     }
 
     handlePrev() {
-        if (this.currentPage > 1) {
-            this.currentPage--;
-            this.offset -= this.pageSize;
-            this.loadData();
-            this.disabledPrev = false;
-            this.disabledNext = false;
-        }
-        if (this.currentPage === 1) {
-            this.disabledPrev = true;
-        }
+        if (this.currentPage === 1) return;
+
+        this.currentPage--;
+
+        this.lastRecordId =
+            this.currentPage === 1
+                ? null
+                : this.pageCursors.get(this.currentPage - 1);
+
+        this.loadData();
+    }
+
+    updateButtons() {
+        this.disabledPrev = (this.currentPage === 1);
+        this.disabledNext = !this.hasNext;
     }
 
     // ROW SELECT

@@ -1,12 +1,88 @@
+/* HEADER BAR */
 .header-bar {
     display: flex;
-    justify-content: space-between; /*pushes to extreme ends */
-    align-items: center;
-    padding: 30px;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 16px 24px;
+    background: #f9fafb;
+    border-radius: 8px;
+    margin: 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
 }
 
-.footer-bar {
+/* FILTER GROUP */
+.filters {
     display: flex;
-    justify-content: flex-end; /* push to right */
-    margin-top: 10px;
+    gap: 16px;
+    align-items: flex-end;
+}
+
+.filters lightning-combobox {
+    min-width: 180px;
+}
+
+/* ACTION BUTTON GROUP (RIGHT) */
+.header-bar > div:last-child {
+    display: flex;
+    gap: 10px;
+}
+
+/* DATATABLE WRAPPER */
+lightning-datatable {
+    margin: 0 16px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* PAGINATION BAR */
+.pagination-bar {
+    background: #f9fafb;
+    border-radius: 8px;
+    margin: 16px;
+    padding: 12px;
+}
+
+/* FOOTER BAR (DELETE AREA) */
+.footer-bar {
+    margin: 20px 16px;
+    padding: 14px;
+    display: flex;
+    justify-content: center;
+    background: #fff1f2;
+    border: 1px solid #fecdd3;
+    border-radius: 8px;
+}
+
+/* FIXED HEIGHT DATATABLE CONTAINER */
+.datatable-wrapper {
+    height: 420px;            /* adjust as per your UI */
+    min-height: 420px;
+    margin: 0 16px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    /*overflow-y: auto; */        /* enables scroll when records are more */
+}
+
+/* OPTIONAL: smooth scrollbar */
+.datatable-wrapper::-webkit-scrollbar {
+    width: 8px;
+}
+.datatable-wrapper::-webkit-scrollbar-thumb {
+    background-color: #d1d5db;
+    border-radius: 4px;
+}
+
+.datatable-wrapper {
+    background: linear-gradient(
+        to bottom,
+        #ffffff 0%,
+        #f9fafb 100%
+    );
+}
+
+/* DELETE BUTTON EMPHASIS */
+.footer-bar lightning-button {
+    --slds-c-button-destructive-color-background: #dc2626;
+    --slds-c-button-destructive-color-border: #dc2626;
 }
