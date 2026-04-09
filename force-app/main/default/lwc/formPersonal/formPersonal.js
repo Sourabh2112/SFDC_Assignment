@@ -33,24 +33,15 @@ export default class FormPersonal extends NavigationMixin(LightningElement) {
             }
         }
 
-        if (fieldName === 'DOB__c') {
-
-            if (value) {
-                const selectedDate = new Date(value);
-                const today = new Date();
-
-                // remove time part
-                today.setHours(0, 0, 0, 0);
-
-                if (selectedDate > today) {
-                    errorMessage = 'Future date not allowed';
-                }
-            }
-        }
-
         field.setCustomValidity(errorMessage);
         field.reportValidity();
     }
+
+
+    get today() {
+        return new Date().toISOString().slice(0, 10);
+    }
+
 
     handleSave() {
 
@@ -60,13 +51,13 @@ export default class FormPersonal extends NavigationMixin(LightningElement) {
         }
 
         createPersonal({ rec: this.record })
-            .then((recordId) => {   
+            .then((recordId) => {
                 this.showToast('Success', 'Saved', 'success');
 
                 this[NavigationMixin.Navigate]({
                     type: 'standard__recordPage',
                     attributes: {
-                        recordId: recordId,   
+                        recordId: recordId,
                         objectApiName: 'Aadhar_Entry__c',
                         actionName: 'view'
                     }

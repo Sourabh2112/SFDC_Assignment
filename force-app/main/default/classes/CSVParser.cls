@@ -44,29 +44,6 @@ public with sharing class CSVParser {
         return rec;
     }
 
-    // SAFE LINE SPLIT (NO REGEX)
-    private static List<String> safeSplitLines(String data) {
-        List<String> lines = new List<String>();
-        String current = '';
-
-        for (Integer i = 0; i < data.length(); i++) {
-            String ch = data.substring(i, i+1);
-
-            if (ch == '\n') {
-                lines.add(current);
-                current = '';
-            } else if (ch != '\r') { // ignore CR
-                current += ch;
-            }
-        }
-
-        if (!String.isBlank(current)) {
-            lines.add(current);
-        }
-
-        return lines;
-    }
-
     // SAFE COLUMN SPLIT (NO REGEX)
     private static List<String> safeSplitColumns(String line) {
         List<String> result = new List<String>();

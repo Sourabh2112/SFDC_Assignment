@@ -5,7 +5,7 @@
         <lightning-input label="Middle Name" data-field="Middle_Name__c" onchange={handleChange} onkeyup={validateField}></lightning-input>
         <lightning-input label="Last Name" data-field="Last_Name__c" onchange={handleChange} onkeyup={validateField}></lightning-input>
 
-        <lightning-input type="date" label="DOB" data-field="DOB__c" onchange={handleChange} oninput={validateField}></lightning-input>
+        <lightning-input type="date" label="DOB" data-field="DOB__c" onchange={handleChange} max ={today}></lightning-input>
 
         <lightning-radio-group
             label="Gender"

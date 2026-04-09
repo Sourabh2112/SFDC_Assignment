@@ -25,7 +25,7 @@ export default class AadharListView extends NavigationMixin(LightningElement) {
     sCity = null;
 
     // PAGINATION
-    offset = 0;
+    //offset = 0;
     totalRecords = 0;
     totalPages = 1;
     disabledPrev = true;
@@ -207,7 +207,8 @@ export default class AadharListView extends NavigationMixin(LightningElement) {
     handleStateChange(event) {
         this.sState = event.detail.value;
         this.sCity = null;
-        this.offset = 0;
+        this.pageCursors.clear();
+        this.lastRecordId = null;
         this.totalRecords = 0;
         this.currentPage = 1;
         this.totalPages = 1;
@@ -233,7 +234,8 @@ export default class AadharListView extends NavigationMixin(LightningElement) {
     // CITY CHANGE
     handleCityChange(event) {
         this.sCity = event.detail.value;
-        this.offset = 0;
+        this.pageCursors.clear();
+        this.lastRecordId = null;
         this.totalRecords = 0;
         this.currentPage = 1;
         this.totalPages = 1;
@@ -384,10 +386,11 @@ export default class AadharListView extends NavigationMixin(LightningElement) {
     resetFilter() {
         this.sState = null;
         this.sCity = null;
-        this.offset = 0;
         this.totalRecords = 0;
         this.currentPage = 1;
         this.totalPages = 1;
+        this.pageCursors.clear();
+        this.lastRecordId = null;
 
         this.loadData();
         this.loadCount();

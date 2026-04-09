@@ -7,6 +7,11 @@ public class AadharValidator {
         if (!isAlpha(rec.First_Name__c)) {
             errors.add('Invalid First Name');
         }
+        if (rec.Middle_Name__c != Null) {
+            if (!isAlpha(rec.Middle_Name__c)) {
+                errors.add('Invalid Middle Name');
+            }
+        }
         if (!isAlpha(rec.Last_Name__c)) {
             errors.add('Invalid Last Name');
         }
@@ -32,13 +37,15 @@ public class AadharValidator {
         if (rec.Pin__c != null && rec.Pin__c.length() != 6) {
             errors.add('Invalid PIN');
         }
-
+        
         return errors;
     }
 
     private static Boolean isAlpha(String value) {
 
-        if (String.isBlank(value)) return false;
+        if (String.isBlank(value)) {
+            return false;
+        }
 
         for (Integer i = 0; i < value.length(); i++) {
             String ch = value.substring(i, i+1);
